@@ -219,11 +219,17 @@ export async function runChildProcess(
   const onLogError = opts.onLogError ?? ((err, id, msg) => console.warn({ err, runId: id }, msg));
 
   return new Promise<RunProcessResult>((resolve, reject) => {
-    const mergedEnv = ensurePathInEnv({ ...process.env, ...opts.env });
+    const inheritedEnv = { ...process.env };
+    // Strip Claude Code session markers so child `claude` processes don't
+    // refuse to start with "cannot be launched inside another session".
+    delete inheritedEnv.CLAUDECODE;
+    delete inheritedEnv.CLAUDE_CODE_ENTRYPOINT;
+    delete inheritedEnv.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS;
+    const mergedEnv = ensurePathInEnv({ ...inheritedEnv, ...opts.env });
     const child = spawn(command, args, {
       cwd: opts.cwd,
       env: mergedEnv,
-      shell: false,
+      shell: process.platform === "win32",
       stdio: [opts.stdin != null ? "pipe" : "ignore", "pipe", "pipe"],
     }) as ChildProcessWithEvents;
 
