@@ -1558,7 +1558,7 @@ function RunDetail({ run, agentRouteId, adapterType }: { run: HeartbeatRun; agen
                 )}
               </div>
             )}
-            {run.error && (
+            {run.error && run.errorCode !== "error_max_turns" && (
               <div className="text-xs">
                 <span className="text-red-600 dark:text-red-400">{run.error}</span>
                 {run.errorCode && <span className="text-muted-foreground ml-1">({run.errorCode})</span>}
@@ -2236,7 +2236,7 @@ function LogViewer({ run, adapterType }: { run: HeartbeatRun; adapterType: strin
         <div ref={logEndRef} />
       </div>
 
-      {(run.status === "failed" || run.status === "timed_out") && (
+      {(run.status === "failed" || run.status === "timed_out") && run.errorCode !== "error_max_turns" && (
         <div className="rounded-lg border border-red-300 dark:border-red-500/30 bg-red-50 dark:bg-red-950/20 p-3 space-y-2">
           <div className="text-xs font-medium text-red-700 dark:text-red-300">Failure details</div>
           {run.error && (
