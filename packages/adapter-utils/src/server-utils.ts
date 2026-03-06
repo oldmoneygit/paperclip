@@ -126,9 +126,10 @@ export function buildPaperclipEnv(agent: { id: string; companyId: string }): Rec
  */
 function stripParentCliEnv<T extends Record<string, unknown>>(env: T): T {
   const keysToStrip = [
-    "CLAUDECODE",              // Claude Code nesting guard
-    "CLAUDE_CODE_ENTRYPOINT",  // Claude Code entry marker
-    "CODEX_CLI_SESSION",       // Codex CLI nesting guard
+    "CLAUDECODE", // Claude Code nesting guard
+    "CLAUDE_CODE_ENTRYPOINT", // Claude Code entry marker
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS", // Claude Code agent teams flag
+    "CODEX_CLI_SESSION", // Codex CLI nesting guard
   ];
   const cleaned = { ...env };
   for (const key of keysToStrip) {
