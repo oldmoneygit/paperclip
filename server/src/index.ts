@@ -506,7 +506,7 @@ if (config.heartbeatSchedulerEnabled) {
 
     // Periodically reap orphaned runs (5-min staleness threshold)
     void heartbeat
-      .reapOrphanedRuns({ staleThresholdMs: 5 * 60 * 1000 })
+      .reapOrphanedRuns({ staleThresholdMs: 30 * 60 * 1000 })
       .catch((err) => {
         logger.error({ err }, "periodic reap of orphaned heartbeat runs failed");
       });

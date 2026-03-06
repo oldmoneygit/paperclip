@@ -329,7 +329,10 @@ export async function runChildProcess(
       reject(new Error(msg));
     });
 
-    child.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
+    let resolved = false;
+    const doResolve = (code: number | null, signal: NodeJS.Signals | null) => {
+      if (resolved) return;
+      resolved = true;
       if (timeout) clearTimeout(timeout);
       runningProcesses.delete(runId);
       void logChain.finally(() => {
@@ -341,6 +344,16 @@ export async function runChildProcess(
           stderr,
         });
       });
+    };
+
+    child.on("close", (code: number | null, signal: NodeJS.Signals | null) => {
+      doResolve(code, signal);
+    });
+
+    child.on("exit", (code: number | null, signal: NodeJS.Signals | null) => {
+      // On Windows with shell: true, "close" may never fire even after process exits.
+      // Use "exit" as fallback with a short delay to let "close" fire first if it will.
+      setTimeout(() => doResolve(code, signal), 2000);
     });
   });
 }
